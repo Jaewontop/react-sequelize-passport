@@ -1,20 +1,13 @@
-const router = require('express').Router();
-const db = require('../../models');
-const passport = require('../../config/passport');
+const router = require("express").Router();
+const db = require("../../models");
+const passport = require("../../passport");
 
-// Using the passport.authenticate middleware with our local strategy.
-// passport.authenticate() is a middle ware provided by passport
-// and is configured
-router.post('/login', passport.authenticate('local'), (req, res) => {
+router.post("/login", passport.authenticate("local"), (req, res) => {
   console.log(req);
   res.json(req.user);
 });
 
-// Route for signing up a user. The user's password is automatically
-// hashed and stored securely thanks to how we configured our
-// Sequelize User Model. If the user is created successfully, proceed
-//  to log the user in, otherwise send back an error
-router.post('/signup', (req, res) => {
+router.post("/signup", (req, res) => {
   db.User.create({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
@@ -29,14 +22,33 @@ router.post('/signup', (req, res) => {
     });
 });
 
+router.get("user/google", function (req, res, next) {
+  // GET /user/google
+  passport.authenticate("google", { scope: ["profile", "email"] })(
+    req,
+    res,
+    next
+  );
+});
+
+router.get(
+  "user/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: "/",
+  }),
+  async (req, res, next) => {
+    return res.status(200).redirect(frontUrl);
+  }
+);
+
 // Route for logging user out
-router.get('/logout', (req, res) => {
+router.get("/logout", (req, res) => {
   req.logout();
-  res.json('logout successful');
+  res.json("logout successful");
 });
 
 // Route for getting some data about our user to be used client side
-router.get('/user_data', (req, res) => {
+router.get("/user_data", (req, res) => {
   if (!req.user) {
     // The user is not logged in, send back an empty object
     res.json({});

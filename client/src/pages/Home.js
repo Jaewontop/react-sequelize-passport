@@ -3,15 +3,15 @@ import { AuthContext } from "../AuthContext";
 import "../App.css";
 import { Container, Row, Button, Col } from "react-bootstrap";
 import Axios from "axios";
+import { GoogleLoginButton } from "react-social-login-buttons";
 
 function Home(props) {
-  
   const { isAuth, logout } = useContext(AuthContext);
 
   const [secret, setSecret] = useState("");
 
   // this function is duplicated in the Members page component
-  // consider refactor 
+  // consider refactor
   const getSecret = async () => {
     const secretResponse = await Axios.get("/api/secrets");
     console.log(secretResponse.data);
@@ -22,60 +22,51 @@ function Home(props) {
     <Container className="signup">
       <Row>
         <Col md={{ span: 8, offset: 2 }}>
-          <h1>Home Page</h1>
+          <h1>메인</h1>
           {isAuth ? (
             <>
               <Button
                 className="m-1"
-                onClick={e => {
+                onClick={(e) => {
                   e.preventDefault();
-                  setSecret('');
+                  setSecret("");
                   logout();
                 }}
               >
                 Logout
-              </Button>
-              <Button
-                className="m-1"
-                onClick={e => {
-                  e.preventDefault();
-                  props.history.push("/members");
-                }}
-              >
-                Members
               </Button>
             </>
           ) : (
             <>
               <Button
                 className="m-1"
-                onClick={e => {
+                onClick={(e) => {
                   e.preventDefault();
                   props.history.push("/login");
                 }}
               >
-                Login
+                Email Login
               </Button>
               <Button
                 className="m-1"
-                onClick={e => {
+                onClick={(e) => {
                   e.preventDefault();
                   props.history.push("/signup");
                 }}
               >
-                Signup
+                Email Signup
               </Button>
+              <GoogleLoginButton
+                onClick={(e) => {
+                  e.preventDefault();
+                  props.history.push("/user/google");
+                }}
+                align="center"
+                size="40px"
+                text="Google"
+              />
             </>
           )}
-          <Button
-            className="m-1"
-            onClick={e => {
-              e.preventDefault();
-              getSecret();
-            }}
-          >
-            Show Secrets
-          </Button>
         </Col>
       </Row>
       <Row>
